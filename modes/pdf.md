@@ -1,9 +1,18 @@
 # Modo: pdf — Generación de PDF ATS-Optimizado
 
+## Canonical tailoring — `resume/tailoring-prompt.txt` (if present)
+
+**English (authoritative for agents):** If `resume/tailoring-prompt.txt` exists, read it in full and treat it as the **primary** tailoring specification (the file’s STEP 1–16, role matrix, skills matrix, experience rules, validation). Then map the resulting **Tailored resume** text into `templates/cv-template.html` + `config/profile.yml` placeholders and run `generate-pdf.mjs` as usual.
+
+**Sparse base DOCX:** If the user’s `resume/*.docx` only contains contact + client names (no responsibility bullets), do **not** infer experience from the filename. Build bullets only from `cv.md`, `article-digest.md`, and `interview-prep/story-bank.md`, and from verifiable facts the user provides in chat. The tailoring prompt’s “infer conservative metrics” line applies only where the prompt itself allows — never invent employers, dates, or tools.
+
+**Español:** Si existe `resume/tailoring-prompt.txt`, léelo completo y úsalo como spec canónica (STEP 1–16) antes de rellenar el HTML. Si el DOCX base no tiene bullets, toda la evidencia sale de `cv.md` / digests / story-bank.
+
 ## Pipeline completo
 
 1. Lee `cv.md` como fuentes de verdad
 2. Pide al usuario el JD si no está en contexto (texto o URL)
+2b. **Prioridad:** si existe `resume/tailoring-prompt.txt`, ejecútalo como BLOQUE CANÓNICO (STEP 1–16) para clasificación de rol, MUST-HAVE technologies, summary, skills, experience, validación. Si no existe, lee `modes/_profile.md` y, si tiene el bloque `Custom Resume Tailoring Prompt (Verbatim)`, úsalo como BLOQUE CANÓNICO (p.ej. STEP 1–6) para clasificar rol, detectar MUST-HAVE technologies y decidir colocación en `Professional Summary`, `Skills` y `Work Experience`. Combinar con `_profile.md` sin duplicar reglas conflictivas. Usa sus resultados como base para keywords/competency grid y reordenamiento de bullets; NO inventes ni reclames evidencia que no exista en `cv.md` / `article-digest.md` / story-bank. Si el prompt produce salida extra (p.ej. "ATS Relevance Score" o "Tailored resume"), úsala internamente para decisiones y ajusta al formato del PDF.
 3. Extrae 15-20 keywords del JD
 4. Detecta idioma del JD → idioma del CV (EN default)
 5. Detecta ubicación empresa → formato papel:

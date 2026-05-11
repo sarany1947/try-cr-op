@@ -10,6 +10,33 @@
      file (your overrides). Your customizations always win.
      ============================================================ -->
 
+## AI clients (Claude not required)
+
+Use **Cursor + GPT**, **ChatGPT**, **Gemini** (CLI or API), or any agent that reads this repo. Instructions are model-agnostic: **`AGENTS.md`** + **`modes/`**. See **`GPT.md`** (ChatGPT/Cursor) and **`GEMINI.md`** (Gemini CLI).
+
+## Per-job tailored resumes (normal)
+
+Each JD should produce a **new** tailored PDF under **`output/`** (see `modes/pdf.md` naming). **`cv.md`** stays your **stable evidence bank**; it is not replaced by one-off JD text. Tailoring always runs through **`resume/tailoring-prompt.txt`** when that file exists.
+
+## Resume source: sparse shell + tailoring prompt (optional)
+
+<!-- If your “base resume” is only name, contact, and client companies (no bullets), keep rich facts in cv.md + article-digest.md + story-bank.md. -->
+
+| Artifact | Role |
+|----------|------|
+| `resume/Sai_Saran_Base_Resume.docx` or `resume/*.docx` | Identity / shell — extract names + clients only unless bullets exist |
+| `resume/tailoring-prompt.txt` | **Canonical ATS/tailoring instructions** (STEP 1–16). The agent MUST follow this file when generating tailored resume content for PDF/HTML. |
+
+If `resume/tailoring-prompt.txt` exists, `pdf` mode treats it as the primary tailoring spec. Do not fabricate experience: all bullets must map to evidence in `cv.md` (and optional digests), per the prompt’s “Never fabricate” / gap rules.
+
+## Custom Resume Tailoring Prompt (Verbatim)
+
+<!-- Option A: Paste your full prompt below between the markers. Option B: keep it only in `resume/tailoring-prompt.txt` and put a one-line pointer here. -->
+
+**Pointer (recommended for long prompts):** Read and execute the full prompt from `resume/tailoring-prompt.txt` verbatim for STEP 1–16 before building HTML/PDF.
+
+---
+
 ## Your Target Roles
 
 <!-- Replace these with YOUR target roles. Examples:

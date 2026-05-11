@@ -4,9 +4,11 @@
 > It is the Gemini equivalent of CLAUDE.md.
 > All slash commands are defined in `.gemini/commands/`.
 
+**ChatGPT / Cursor / OpenAI:** same modes and rules — see **`GPT.md`**.
+
 ## What is career-ops
 
-AI-powered job search automation: pipeline tracking, offer evaluation, CV generation, portal scanning, batch processing. Originally built on Claude Code, now fully supported on Gemini CLI and OpenCode.
+AI-powered job search automation: pipeline tracking, offer evaluation, CV generation, portal scanning, batch processing. Works with **Gemini CLI, Cursor, ChatGPT, Claude Code, OpenCode**, and other agents that read `AGENTS.md` + `modes/`.
 
 ## Data Contract (CRITICAL)
 

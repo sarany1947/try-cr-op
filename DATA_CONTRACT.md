@@ -19,6 +19,7 @@ These files contain your personal data, customizations, and work product. Update
 | `data/scan-history.tsv` | Your scan history |
 | `data/follow-ups.md` | Your follow-up history |
 | `writing-samples/*` | Your personal writing samples for style calibration |
+| `resume/*` | Your base resume shell (e.g. DOCX) + canonical tailoring prompt text |
 | `reports/*` | Your evaluation reports |
 | `output/*` | Your generated PDFs |
 | `jds/*` | Your saved job descriptions |
@@ -50,9 +51,12 @@ These files contain system logic, scripts, templates, and instructions that impr
 | `modes/ja/*` | Japanese language modes |
 | `modes/pt/*` | Portuguese language modes |
 | `modes/ru/*` | Russian language modes |
-| `CLAUDE.md` | Agent instructions |
-| `AGENTS.md` | Codex instructions |
+| `CLAUDE.md` | Claude Code wrapper |
+| `AGENTS.md` | Canonical agent instructions (all CLIs) |
+| `GEMINI.md` | Gemini CLI context |
+| `GPT.md` | ChatGPT / Cursor / OpenAI — entry pointer (same modes as AGENTS.md) |
 | `*.mjs` | Utility scripts |
+| `paste-pipeline/*` | Optional paste-URL → PDF automation (HTTP server + Gemini) |
 | `batch/batch-prompt.md` | Batch worker prompt |
 | `batch/batch-runner.sh` | Batch orchestrator |
 | `dashboard/*` | Go TUI dashboard |

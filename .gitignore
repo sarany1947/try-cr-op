@@ -20,6 +20,9 @@ jds/*
 writing-samples/*
 !writing-samples/README.md
 
+# Resume shell (DOCX often contains PII — copy to VM manually if needed)
+resume/*.docx
+
 # User config and customization (never auto-updated)
 config/profile.yml
 portals.yml

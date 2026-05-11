@@ -15,7 +15,10 @@
     "rollback": "node update-system.mjs rollback",
     "liveness": "node check-liveness.mjs",
     "scan": "node scan.mjs",
-    "gemini:eval": "node gemini-eval.mjs"
+    "gemini:eval": "node gemini-eval.mjs",
+    "viewer": "node viewer-web/server.mjs",
+    "pasta": "node paste-pipeline/server.mjs",
+    "pasta:cli": "node paste-pipeline/cli.mjs"
   },
   "keywords": [
     "ai",
