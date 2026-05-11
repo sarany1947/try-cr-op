@@ -2,7 +2,7 @@
 
 | Layer | How |
 |--------|-----|
-| **Azure VM** | **`deploy/terraform/`** — Terraform runs **only in GitHub Actions** (`.github/workflows/terraform-azure.yml`). Locally: **git** only (`commit` / `push`). |
+| **Azure VM** | **`deploy/terraform/`** — **Never run Terraform on your laptop.** Only **GitHub Actions → Terraform (Azure)**. One secret **`CAREER_OPS_AZURE`**. Locally: **git** only. See **`deploy/terraform/DONT_RUN_LOCALLY.md`**. |
 | **App (URL → PDF)** | **`paste-pipeline/README.md`** — `npm run pasta` **on the VM** after RDP/setup. |
 
 | Doc | Use when |

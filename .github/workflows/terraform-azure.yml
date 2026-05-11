@@ -1,5 +1,8 @@
-# Terraform runs only in GitHub Actions — do not run terraform locally.
-# Local workflow: edit .tf files → git commit → git push → PR (plan) or workflow_dispatch (plan/apply).
+# ============================================================================
+# TERRAFORM MUST NOT RUN ON DEVELOPER LAPTOPS — ONLY THIS WORKFLOW MAY RUN IT.
+# Locally: git edit + push. Never: terraform init/plan/apply on your machine.
+# ============================================================================
+# Single repo secret: CAREER_OPS_AZURE (JSON — deploy/terraform/azure-secret.example.json)
 
 name: Terraform (Azure)
 
@@ -12,7 +15,7 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: 'plan = preview only; apply = writes to Azure (main branch only)'
+        description: 'plan = preview; apply = writes Azure (main only)'
         required: true
         default: plan
         type: choice
@@ -21,7 +24,6 @@ on:
           - apply
 
 permissions:
-  id-token: write
   contents: read
 
 concurrency:
@@ -31,38 +33,57 @@ concurrency:
 env:
   TF_IN_AUTOMATION: true
   TF_INPUT: 'false'
-  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  ARM_USE_OIDC: true
-  TF_VAR_admin_username: ${{ secrets.TF_VAR_admin_username }}
-  TF_VAR_admin_password: ${{ secrets.TF_VAR_admin_password }}
-  TF_VAR_admin_source_ip_cidr: ${{ secrets.TF_VAR_admin_source_ip_cidr }}
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
-    # Fork PRs have no Azure/GitHub secrets — skip (same-repo PRs only).
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'pull_request' &&
        github.event.pull_request.head.repo.full_name == github.repository)
+
     steps:
       - uses: actions/checkout@v6
 
-      - name: Check Azure remote-state variables
+      - name: Load CAREER_OPS_AZURE (one JSON secret)
+        env:
+          RAW: ${{ secrets.CAREER_OPS_AZURE }}
         run: |
-          test -n "${{ vars.TF_STATE_RG }}" || { echo "Set repo Variable TF_STATE_RG"; exit 1; }
-          test -n "${{ vars.TF_STATE_SA }}" || { echo "Set repo Variable TF_STATE_SA"; exit 1; }
-          test -n "${{ vars.TF_STATE_CONTAINER }}" || { echo "Set repo Variable TF_STATE_CONTAINER"; exit 1; }
-          test -n "${{ vars.TF_STATE_KEY }}" || { echo "Set repo Variable TF_STATE_KEY"; exit 1; }
+          set -euo pipefail
+          if [ -z "${RAW:-}" ]; then
+            echo "::error::Create ONE repo secret named CAREER_OPS_AZURE (paste JSON from deploy/terraform/azure-secret.example.json — see deploy/terraform/README.md)."
+            exit 1
+          fi
+          printf '%s' "$RAW" > /tmp/az.json
+          jq empty /tmp/az.json
 
-      - name: Azure login (OIDC)
+          {
+            echo "ARM_CLIENT_ID=$(jq -r .clientId /tmp/az.json)"
+            echo "ARM_SUBSCRIPTION_ID=$(jq -r .subscriptionId /tmp/az.json)"
+            echo "ARM_TENANT_ID=$(jq -r .tenantId /tmp/az.json)"
+            echo "TF_BACKEND_RG=$(jq -r .state.resourceGroup /tmp/az.json)"
+            echo "TF_BACKEND_SA=$(jq -r .state.storageAccount /tmp/az.json)"
+            echo "TF_BACKEND_CONTAINER=$(jq -r .state.container /tmp/az.json)"
+            echo "TF_BACKEND_KEY=$(jq -r .state.key /tmp/az.json)"
+            echo "TF_VAR_admin_username=$(jq -r .windowsVm.adminUsername /tmp/az.json)"
+            echo "TF_VAR_admin_source_ip_cidr=$(jq -r .windowsVm.rdpSourceCidr /tmp/az.json)"
+          } >> "$GITHUB_ENV"
+
+          echo "ARM_CLIENT_SECRET<<DELIM_CS" >> "$GITHUB_ENV"
+          jq -r .clientSecret /tmp/az.json >> "$GITHUB_ENV"
+          echo "DELIM_CS" >> "$GITHUB_ENV"
+
+          echo "TF_VAR_admin_password<<DELIM_PW" >> "$GITHUB_ENV"
+          jq -r .windowsVm.adminPassword /tmp/az.json >> "$GITHUB_ENV"
+          echo "DELIM_PW" >> "$GITHUB_ENV"
+
+      - name: Azure login (service principal)
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ env.ARM_CLIENT_ID }}
+          tenant-id: ${{ env.ARM_TENANT_ID }}
+          subscription-id: ${{ env.ARM_SUBSCRIPTION_ID }}
+          client-secret: ${{ env.ARM_CLIENT_SECRET }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -78,10 +99,10 @@ jobs:
         working-directory: deploy/terraform
         run: |
           terraform init \
-            -backend-config=resource_group_name=${{ vars.TF_STATE_RG }} \
-            -backend-config=storage_account_name=${{ vars.TF_STATE_SA }} \
-            -backend-config=container_name=${{ vars.TF_STATE_CONTAINER }} \
-            -backend-config=key=${{ vars.TF_STATE_KEY }}
+            -backend-config=resource_group_name="${TF_BACKEND_RG}" \
+            -backend-config=storage_account_name="${TF_BACKEND_SA}" \
+            -backend-config=container_name="${TF_BACKEND_CONTAINER}" \
+            -backend-config=key="${TF_BACKEND_KEY}"
 
       - name: Terraform validate
         working-directory: deploy/terraform

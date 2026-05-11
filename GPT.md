@@ -26,6 +26,10 @@ See **`GEMINI.md`** for `/career-ops-*` slash commands (same underlying modes).
 - **`cv.md`** = stable **evidence bank** (facts, roles, tools, wins). Update it over time; do **not** overwrite it with a single JD.
 - **Each job** gets its **own** tailored artifact: **`output/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf`** (and optional temp HTML). Content changes every time because **`resume/tailoring-prompt.txt`** + JD drive the rewrite.
 
+## Terraform / Azure VM
+
+**Do not run `terraform` on your laptop.** Use **GitHub Actions → Terraform (Azure)** only. See `deploy/terraform/DONT_RUN_LOCALLY.md`.
+
 ## Update check
 
 Same as `AGENTS.md`:
