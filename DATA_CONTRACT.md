@@ -57,6 +57,8 @@ These files contain system logic, scripts, templates, and instructions that impr
 | `GPT.md` | ChatGPT / Cursor / OpenAI — entry pointer (same modes as AGENTS.md) |
 | `*.mjs` | Utility scripts |
 | `paste-pipeline/*` | Optional paste-URL → PDF automation (HTTP server + Gemini) |
+| `deploy/terraform/*` | Azure VM IaC (Terraform; executed in GitHub Actions only) |
+| `.github/workflows/terraform-azure.yml` | CI workflow for Terraform plan/apply |
 | `batch/batch-prompt.md` | Batch worker prompt |
 | `batch/batch-runner.sh` | Batch orchestrator |
 | `dashboard/*` | Go TUI dashboard |

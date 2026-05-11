@@ -2,6 +2,8 @@
 
 Your portal screenshot shows **Resource group:** `carrer-ops` · **Region:** East US · **Empty** (good).
 
+**IaC (optional):** Provision the same VM with Terraform **only via GitHub Actions** — see **`terraform/README.md`** and run workflow **Terraform (Azure)** (no `terraform` on your laptop).
+
 ## 1) Create a Windows VM (portal)
 
 1. Open resource group **`carrer-ops`** → **Create** → search **Windows Server 2022 Datacenter** (or Windows 11 multi-session if your policy allows).
