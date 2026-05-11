@@ -8,8 +8,10 @@ terraform {
     }
   }
 
-  # Configured only in GitHub Actions via -backend-config (never run locally).
-  backend "azurerm" {}
+  # CI passes RG/SA/container/key via -backend-config. Azure AD auth (no storage access key).
+  backend "azurerm" {
+    use_azuread_auth = true
+  }
 }
 
 provider "azurerm" {
